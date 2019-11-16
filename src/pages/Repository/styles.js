@@ -122,3 +122,28 @@ export const PageActions = styled.div`
     }
   }
 `;
+
+export const IssueFilter = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  margin-bottom: 20px;
+
+  span {
+    font-weight: bold;
+    font-size: 18px;
+  }
+
+  button {
+    margin-left: 10px;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 10%;
+    border: none;
+
+    &:nth-child(${props => props.active + 1}) {
+      background: #7159c1;
+      color: #fff;
+    }
+  }
+`;
