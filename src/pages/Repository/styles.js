@@ -101,3 +101,24 @@ export const IssueList = styled.div`
     }
   }
 `;
+
+export const PageActions = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+
+  button {
+    background: #7159c1;
+    border-radius: 5%;
+    color: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 12px;
+    border: none;
+    font-weight: bold;
+
+    &[disabled]{
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+  }
+`;

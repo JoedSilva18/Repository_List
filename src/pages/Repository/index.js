@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
 import PropTypes from 'prop-types';
-import { Loading, Owner, IssueList } from './styles';
+import { Loading, Owner, IssueList, PageActions } from './styles';
 import Container from '../../components/Container';
 
 class Repository extends Component {
@@ -18,19 +18,22 @@ class Repository extends Component {
   state = {
     repository: {},
     issues: [],
-    loading: true
+    loading: true,
+    page: 1
   }
 
   async componentDidMount() {
     const { match } = this.props;
     const repoName = decodeURIComponent(match.params.repository);
+    const { page } = this.state;
 
     const [repository, issues] = await Promise.all([
       api.get(`/repos/${repoName}`),
       api.get(`/repos/${repoName}/issues`, {
         params: {
+          page,
+          per_page: 5,
           state: 'open',
-          per_page: 5
         }
       })
     ]);
@@ -42,9 +45,39 @@ class Repository extends Component {
     });
   }
 
+  loadIssues = async action => {
+
+    const { match } = this.props;
+    const repoName = decodeURIComponent(match.params.repository);
+    const { page } = this.state;
+
+    const issues = await api.get(`/repos/${repoName}/issues`, {
+      params: {
+        page,
+        per_page: 5,
+        state: 'open',
+      }
+    });
+
+    this.setState({
+      issues: issues.data
+    });
+
+  }
+
+  handlePage = async action => {
+
+    const { page } = this.state;
+    await this.setState({
+      page: action === 'back' ? page - 1 : page + 1
+    })
+
+    this.loadIssues();
+  }
+
   render() {
 
-    const { repository, issues, loading } = this.state;
+    const { repository, issues, loading, page } = this.state;
 
     if (loading) {
       return <Loading>Carregando</Loading>
@@ -73,6 +106,19 @@ class Repository extends Component {
             </li>
           ))}
         </IssueList>
+        <PageActions>
+          <button
+            type="button"
+            disabled={page < 2}
+            onClick={() => this.handlePage('back')}>
+            Voltar
+          </button>
+          <button
+            type="button"
+            onClick={() => this.handlePage('next')}>
+            Avançar
+          </button>
+        </PageActions>
       </Container>
     )
   }
